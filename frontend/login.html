@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Bossie Ride</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>Login</h1>
+  <div class="form-container">
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+    <div id="error" style="color: red; margin-top: 10px;"></div>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const errorDiv = document.getElementById('error');
+
+      try {
+        const res = await fetch('http://localhost:3000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || 'Login failed');
+        }
+
+        // ✅ Save to localStorage
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        // ✅ Redirect based on role
+        if (data.user.role === 'rider') {
+          window.location.href = 'rider.html';
+        } else if (data.user.role === 'driver') {
+          window.location.href = 'driver.html';
+        } else {
+          alert('Unknown role');
+        }
+
+      } catch (error) {
+        errorDiv.textContent = `❌ ${error.message}`;
+      }
+    });
+  </script>
+</body>
+</html>

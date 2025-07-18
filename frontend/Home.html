@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bossie Ride | Home</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <nav class="navbar">
+      <div class="logo">Bossie Ride</div>
+      <ul class="nav-links">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a class="btn" href="login.html">Login</a></li>
+        <li><a class="btn" href="register.html">Register</a></li>
+      </ul>
+    </nav>
+    <div class="hero-content" id="home">
+      <h1>Ride With Confidence</h1>
+      <p>Fast. Safe. Reliable. Wherever you're headed, we're with you.</p>
+      <button class="btn" onclick="toggleForm()">Get Started</button>
+    </div>
+  </header>
+
+  <section id="about" class="about-section">
+    <h2>About Bossie Ride</h2>
+    <p>Bossie Ride is your go-to ride-sharing solution designed to connect riders and drivers seamlessly. We offer real-time tracking, fair pricing, and fast pickups — all through a smart, user-friendly web app.</p>
+  </section>
+
+  <!-- Login/Register Modal -->
+  <div class="form-modal" id="formModal">
+    <div class="form-container">
+      <span class="close-btn" onclick="toggleForm()">&times;</span>
+      <div class="tabs">
+        <button onclick="switchTab('login')">Login</button>
+        <button onclick="switchTab('register')">Register</button>
+      </div>
+  <script src="script.js"></script>
+</body>
+</html>

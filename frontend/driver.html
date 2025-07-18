@@ -1,0 +1,35 @@
+<!-- Driver Dashboard with location sharing --><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Driver Dashboard - Bossie Ride</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <h1>Driver Dashboard</h1>
+  <div class="form-container">
+    <button onclick="sendLocation()">Share My Location</button>
+  </div>
+  <script>
+    const socket = io();
+    function sendLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          socket.emit('driverLocation', {
+            driverId: 'demoDriverId',
+            location: {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            }
+          });
+          alert('Location sent!');
+        });
+      } else {
+        alert('Geolocation not supported');
+      }
+    }
+  </script>
+</body>
+</html>

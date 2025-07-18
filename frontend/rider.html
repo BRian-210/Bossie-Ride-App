@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bossie Ride - Rider Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places&callback=initMap"></script>
+  <script defer src="/socket.io/socket.io.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .logout-btn, .delete-btn {
+      margin-top: 15px;
+      padding: 10px 15px;
+      border: none;
+      cursor: pointer;
+      color: white;
+    }
+    .logout-btn {
+      background-color: red;
+    }
+    .delete-btn {
+      background-color: black;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome, Rider!</h1>
+  <p>You are logged in as a rider. You can now request a ride below.</p>
+
+  <form id="rideForm">
+    <label for="pickup">Pickup Location:</label>
+    <input type="text" id="pickup" placeholder="Enter pickup location" required />
+
+    <label for="destination">Destination:</label>
+    <input type="text" id="destination" placeholder="Enter destination" required />
+
+    <button type="submit">Request Ride</button>
+  </form>
+  
+  <div id="response"></div>
+
+  <!-- Action buttons -->
+  <button class="logout-btn" onclick="logout()">Logout</button>
+  <button class="delete-btn" onclick="deleteAccount()">Delete Account</button>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    // Redirect if user is not logged in or not a rider
+    if (!user || !token || user.role !== "rider") {
+      window.location.href = "login.html";
+    }
+
+    // Google Maps Autocomplete
+    window.initMap = function () {
+      new google.maps.places.Autocomplete(document.getElementById("pickup"));
+      new google.maps.places.Autocomplete(document.getElementById("destination"));
+    };
+
+    // Request ride
+    document.getElementById("rideForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const pickup = document.getElementById("pickup").value;
+      const destination = document.getElementById("destination").value;
+
+      try {
+        const res = await fetch('https://localhost:3000/api/ride/request', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            pickup,
+            destination,
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.message || "Failed to request ride");
+
+        localStorage.setItem("lastRide", JSON.stringify(data));
+        window.location.href = "login.html";
+      } catch (err) {
+        document.getElementById("response").innerText = `❌ Error: ${err.message}`;
+      }
+    });
+
+    // Logout
+    function logout() {
+      if (confirm("Are you sure you want to logout?")) {
+        localStorage.clear();
+        window.location.href = "login.html";
+      }
+    }
+
+    // Delete account
+  async function deleteAccount() {
+  if (!confirm("Are you sure you want to permanently delete your account?")) return;
+
+  try {
+    const res = await fetch(`http://localhost:3000/api/users/${user._id}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to delete account");
+    }
+
+    alert("✅ Account deleted successfully.");
+    localStorage.clear();
+    window.location.href = "Home.html";
+  } catch (err) {
+    alert(`❌ Error: ${err.message}`);
+  }
+}
+
+  </script>
+</body>
+</html>
